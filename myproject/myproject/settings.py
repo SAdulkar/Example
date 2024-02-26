@@ -11,7 +11,19 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
+from decouple import config
+from pathlib import Path
+import os
+env = environ.Env()
+environ.Env.read_env()
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+# EMAIL_HOST_USER = config('EMAIL')
+# EMAIL_HOST_PASSWORD = config('PASSWORD')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 

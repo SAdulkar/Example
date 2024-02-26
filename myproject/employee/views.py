@@ -1,47 +1,58 @@
 from django.shortcuts import render,HttpResponse,redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate,login,logout
+from employee.models import Employee
+from django.core.mail import BadHeaderError, send_mail
 from django.contrib.auth.decorators import login_required
-# Create your views here.
-@login_required(login_url='login')
+from hashlib import sha256
+from django.http import HttpResponse
 
-# Create your views here.
+
 def index(request):
    return render(request,'index.html')
 
-
-def sign_up(request):
-   if request.method=='POST':
-        uname=request.POST.get('username')
-        email=request.POST.get('email')
-        pass1=request.POST.get('password1')
-        pass2=request.POST.get('password2')
-
-        if pass1!=pass2:
-            return HttpResponse("Your password and confrom password are not Same!!")
-        else:
-
-            my_user=User.objects.create_user(uname,email,pass1)
-            my_user.save()
-            return redirect('login')
-        
-
-
-
-   return render (request,'sign_up.html')
-
 def login(request):
-   
-   if request.method=='POST':
-        username=request.POST.get('username')
-        pass1=request.POST.get('pass')
+    # cookie = request.COOKIES.get('login') 
+    # print('cookie',cookie)
+    # to check if user login or not
+    if request.method=='POST':
+       username = request.POST.get('username')
+       password = request.POST.get('password')
+       print(username,password)
+       emp_obj = Employee.objects.filter(email=username,password=sha256(password.encode('utf-8')).hexdigest())
+       if len(emp_obj)==1:
+          response = redirect('/')
+          response.set_cookie('login', 'true')
+          response.set_cookie('username', username)
+          return response
        
-        user=authenticate(request,username=username,password=pass1)
-        if user is not None:
-            login(request,user)
-            return redirect('index')
-        else:
-            return HttpResponse ("Username or Password is incorrect!!!")
+       elif len(emp_obj)==0:
+          
+          context ={
+             'msg':'Invalid Username and Password!'
+          }
+          return render(request,'login.html',context)
+       else:
+          context ={
+             'msg':'Internal Server Error'
+          }
+          return render(request,'login.html',context)
+    return render(request,'login.html')
 
-   
-   return render(request,'login.html')
+
+def signup(request):
+   if request.method=='POST':
+      username = request.POST.get('username')
+      email = request.POST.get('email')
+      password1 = request.POST.get('password1')
+      password2 = request.POST.get('password2')
+      print(username,password1)
+      if password1==password2:
+         emp_obj = Employee.objects.filter(email=email)
+         if len(emp_obj)>=1:
+            return render(request,'sign_up.html',{'msg':'User already exists please login!'})
+         emp_obj =Employee(username=username,email=email,password = sha256(password1.encode('utf-8')).hexdigest())
+         emp_obj.save()
+         return redirect('/')
+      else:
+         return render(request,'sign_up.html',{'msg':'Create Password and Confirm Password doesnt match'})
+   return render(request,'sign_up.html',)
+# 
