@@ -7,6 +7,20 @@ from django.http import HttpResponse
 
 
 def index(request):
+   cookie = request.COOKIES.get('login') 
+   if 'logout' in request.POST:
+      print('loging out')
+      response = redirect('/')
+      response.set_cookie('login', 'false')
+      response.set_cookie('username', None)
+      return response
+   if cookie=='true':
+      emp_obj = Employee.objects.get(email = request.COOKIES.get('username'))
+
+      context = {
+         'name':emp_obj.username
+      }
+      return render(request,'index.html',context)
    return render(request,'index.html')
 
 def login(request):

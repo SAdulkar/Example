@@ -66,6 +66,13 @@
         font-weight: bold;
         transition: 0.4s ease-in-out;
     }
+    ul li p{
+        text-decoration: none;
+        color: #fff;
+        font-family: Arial;
+        font-weight: bold;
+        transition: 0.4s ease-in-out;
+    }
     
     ul li a:hover{
         color: #ff7200;
@@ -123,7 +130,13 @@
         color: #25201b;
         font-size: 55px
     }
-    
+    .btn{
+        background-color: transparent;
+        border: 1px solid black;
+        border-radius: 10%;
+        width:100px ;
+        height: 36px;
+    }
     </style>
 
 <body>
@@ -141,11 +154,21 @@
                     <li><a href="">ABOUT</a></li>
                     <li><a href="">ADMIN</a></li>
                     <li><a href="">CONTACT</a></li>
-                    <li><a href="/employee/login">Login</a></li>
-                    <li><a href="/employee/signup">SignUp</a></li>
+                    {% if name %}
+                    <li><p>Hello ! {{name}}</p></li>
+                    <li><button type="submit" class="btn" name="logout" value="logout">Logout</button></li>
+                    
+                    <form>
+                        
+                    </form>
+                    {% else %}
+                        <li><a href="/employee/login">Login</a></li>
+                        <li><a href="/employee/signup">SignUp</a></li>
+                    {% endif %}
+                   
                 </ul>
             </div>
-
+            
         </div> 
         <div class="content">
             <h1>Effortlessly<br><span>manage your global employee</span> <br>Data</h1>
